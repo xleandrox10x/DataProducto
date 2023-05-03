@@ -204,3 +204,11 @@ namespace DataProveedor.Services
         </div>
     </body>
 </html>
+
+CONEXION
+Data Source=LAPTOP-TEJDRN6S\LEANDRODB;Initial Catalog=VENTAS;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False
+
+
+Scaffold-DBContext "Data Source=LAPTOP-TEJDRN6S\LEANDRODB;Initial Catalog=VENTAS;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False" Microsoft.EntityFrameworkCore.SQLServer -OutPutDir Models -Context VentasC
+
+builder.Services.Add(new ServiceDescriptor(typeof(ICliente), new ClienteRepository()));
