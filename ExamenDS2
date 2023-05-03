@@ -212,3 +212,179 @@ Data Source=LAPTOP-TEJDRN6S\LEANDRODB;Initial Catalog=VENTAS;Integrated Security
 Scaffold-DBContext "Data Source=LAPTOP-TEJDRN6S\LEANDRODB;Initial Catalog=VENTAS;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False" Microsoft.EntityFrameworkCore.SQLServer -OutPutDir Models -Context VentasC
 
 builder.Services.Add(new ServiceDescriptor(typeof(ICliente), new ClienteRepository()));
+
+/Interface/
+using sesion_12_04.Models;
+
+namespace sesion_12_04.Service
+{
+    public interface IUsuario
+    {
+        void Add(Usuario usuario);
+        IEnumerable<Usuario> GetAllUser();
+    }
+}
+/Repository/
+using sesion_12_04.Models;
+
+namespace sesion_12_04.Service
+{
+    public class UsuarioRepository : IUsuario
+    {
+        private List<Usuario> lst = new List<Usuario>();
+        public void Add(Usuario usuario)
+        {
+            lst.Add(usuario);
+        }
+
+        public IEnumerable<Usuario> GetAllUser()
+        {
+            return lst;
+        }
+    }
+}
+
+/Controller/
+
+using Microsoft.AspNetCore.Mvc;
+using WebAppSem04_C1M.Models;
+using WebAppSem04_C1M.Service;
+
+namespace WebAppSem04_C1M.Controllers
+{
+    public class UsuarioController : Controller
+    {
+        private readonly IUsuario _iusuario;  
+        public UsuarioController(IUsuario usuario)
+        {
+            _iusuario= usuario; 
+        }
+        public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult Listado(Usuario usuario)
+        {
+            if (ModelState.IsValid)
+            {
+                _iusuario.Add(usuario);
+                var lst = _iusuario.GetAllUser();
+                return View(lst);
+            }
+            else
+            {
+                return View("Index");
+            }
+            
+        }
+
+        [Route("Usuario/cargar/{codigo}")]
+        public IActionResult Reporte(string codigo)
+        {
+            ViewData["cod"] = codigo;
+            return View();
+        }
+    }
+}
+
+/Index/
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model WebAppSem04_C1M.Models.Usuario
+@{
+}
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <LINK REL=StyleSheet HREF="~/css/style.css" TYPE="text/css" MEDIA=screen>
+    </head>
+    <body>
+    <div class="container">
+
+        <h1>FORMULARIO DE REGISTRO</h1>
+        <form asp-controller="Usuario" asp-action="Listado" method="post">
+            <div class="form-group">
+                <label for="formGroupExampleInput">Id</label>
+                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Id" asp-for="Id">
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Apellido Paterno</label>
+                <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Apellido Paterno" asp-for="Paterno">
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Apellido Materno</label>
+                <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Apellido Materno" asp-for="Materno">
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Nombres</label>
+                <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Nombres" asp-for="Nombres">
+                <span asp-validation-for="Nombres" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" value="btn" name="grabar" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Grabar</button>
+                <button type="submit" class="btn btn-primary" value="btn" name="modificar">Modificar</button>
+            </div>
+            <div class="form-group">
+            </div>
+
+        </form>
+    </div>
+
+    </body>
+</html>
+
+
+/Vista Listado/
+
+@model IEnumerable<WebAppSem04_C1M.Models.Usuario>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<html>
+    <head>
+
+    </head>
+    <body>
+        <table border="2">
+            <tr>
+                <td>CODIGO</td>
+                <td>APELLIDO PATERNO</td>
+                <td>CARGAR</td>
+            </tr>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Paterno</td>
+                    @{
+                        string cadena = @item.Id + " " + @item.Paterno;
+                        
+                    }
+                    <td><a asp-action="cargar" asp-route-id="@cadena">Cargar</a></td>
+                </tr>            
+            }
+        </table>
+    </body>
+</html>
+
+/Vista Reporte/
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h1>@ViewData["cod"]</h1>
+    </body>
+</html>
