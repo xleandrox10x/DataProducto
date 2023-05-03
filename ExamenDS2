@@ -107,3 +107,100 @@ namespace DataProveedor.Services
 </body>
 </html>
 /*HTML*/
+
+/*RUTA*/
+[Route("Producto/suma/{suma}")]
+        public IActionResult Reporte(decimal suma)
+        {
+            ViewData["suma"] = suma;
+            return View();
+        }
+
+        [Route("Producto/promedio/{prom}")]
+        public IActionResult Promedio(decimal prom)
+        {
+            ViewData["prom"] = prom;
+            return View();
+        }
+
+        [Route("Producto/maximo/{max}")]
+        public IActionResult Maximo(decimal max)
+        {
+            ViewData["max"] = max;
+            return View();
+        }
+
+
+        [Route("Producto/minimo/{min}")]
+        public IActionResult Minimo(decimal min)
+        {
+            ViewData["min"] = min;
+            return View();
+        }
+ /*RUTAS HTML*/
+ @model IEnumerable<Ejer01.Models.TbProducto>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<html>
+    <body>
+        <h1>Producto</h1>
+        <div class="card-deck mx-auto">
+        @{
+            decimal acumulador = 0;
+            decimal min = 999999;
+            decimal max = 0;
+            decimal promedio = 0;
+        }
+        @foreach (var item in Model)
+        {
+            <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+                <div class="card-header">
+                    <h3>@item.DesPro</h3>
+                    <h3>@item.StkAct</h3>
+                    <h3>@item.PrePro</h3>
+                </div>
+                <div class="card_footer text-center">
+                    <a href="#" class="btn btn-primary m-2">Comprar</a>
+                </div>
+            </div>
+
+            acumulador += @item.PrePro;
+            
+
+            if(@item.PrePro > max)
+            {
+                max = @item.PrePro;
+            }
+
+            if(@item.PrePro < min)
+            {
+                min = @item.PrePro;
+            }
+
+        }
+        @{
+            promedio = acumulador / @Model.Count();
+        }
+
+        <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+            <h3>Suma de todos los precios:</h3>
+            <a asp-action="suma" asp-route-id="@Math.Round(acumulador,2)" class="btn btn-primary m-2">Ver</a>
+        </div>
+        <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+            <h3>El promedio de precios:</h3>
+            <a asp-action="promedio" asp-route-id="@Math.Round(promedio,2)" class="btn btn-primary m-2">Ver</a>
+        </div>
+        <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+            <h3>El precio maximo de todos los productos:</h3>
+            <a asp-action="maximo" asp-route-id="@Math.Round(max,2)" class="btn btn-primary m-2">Ver</a>
+        </div>
+        <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+            <h3>El precio minimo de todos los productos:</h3>
+            <a asp-action="minimo" asp-route-id="@Math.Round(min,2)" class="btn btn-primary m-2">Ver</a>
+        </div>
+        </div>
+    </body>
+</html>
