@@ -1,0 +1,109 @@
+using DataProveedor.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DataProveedor.Controllers
+{
+    public class ProductoController : Controller
+    {
+        private readonly IProductos _Iproducto;
+
+        public ProductoController(IProductos iproducto)
+        {
+            _Iproducto = iproducto;
+        }
+
+        public IActionResult Index()
+        {
+            return View(_Iproducto.GetAllProductos());
+        }
+    }
+} /*Controller*/
+
+using DataProveedor.Models;
+
+namespace DataProveedor.Services
+{
+    public interface IProductos
+    {
+        IEnumerable<TbProducto> GetAllProductos();
+    }
+} /*Interface*/
+
+using DataProveedor.Models;
+
+namespace DataProveedor.Services
+{
+    public class ProductoRepository : IProductos
+    {
+        private VentasC conexion = new VentasC();   
+        public IEnumerable<TbProducto> GetAllProductos()
+        {
+            return conexion.TbProductos;
+        }
+    }
+} /*Producto Repository*/
+
+@model IEnumerable<DataProveedor.Models.TbProducto>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<html>
+<head>
+
+</head>
+<body>
+    <h1>Listas de Productos-precioSuma</h1>
+    @{
+        decimal suma = 0;
+        decimal max = 0;
+        decimal less = 99999;
+    }
+    <table>
+        <tr>
+            <th>
+                Codigo
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Precio
+            </th>
+        </tr>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.CodPro
+                </td>
+                <td>
+                    @item.DesPro
+                </td>
+                <td>
+                    @item.PrePro
+                </td>
+            </tr>
+
+            suma += item.PrePro;
+            if(item.PrePro>max)
+            {
+                max = item.PrePro;
+            }
+
+            if(item.PrePro<less)
+            {
+                less = item.PrePro;                
+            }
+
+        }
+    </table>
+    
+    <h4>La suma del precioProducto es: @suma </h4>
+    <h4>Mayor precio es: @max</h4>
+    <h4>Menor precio es: @less</h4>
+
+</body>
+</html>
+/*HTML*/
