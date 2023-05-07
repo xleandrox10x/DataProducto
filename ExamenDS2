@@ -109,11 +109,11 @@ namespace DataProveedor.Services
 /*HTML*/
 
 /*RUTA*/
-[Route("Producto/suma/{suma}")]
-        public IActionResult Reporte(decimal suma)
+ [Route("Venta/suma/{suma}")]
+        public IActionResult Reporte(double suma) 
         {
             ViewData["suma"] = suma;
-            return View();
+            return View(suma);
         }
 
         [Route("Producto/promedio/{prom}")]
@@ -388,3 +388,49 @@ namespace WebAppSem04_C1M.Controllers
         <h1>@ViewData["cod"]</h1>
     </body>
 </html>
+
+/Venta
+@model IEnumerable<Alumno.Models.TbVenta>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<html>
+    <head>
+    </head>
+   
+    <body>
+    @{
+        double acumulador = 0;
+    }
+        <table>
+            <tr>
+                <td>
+                    Codigo
+                </td>
+                <td>
+                    Precio
+                </td>
+            </tr>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.IdVenta
+                    </td>
+                    <td>
+                        @item.Precio
+                    </td>
+                    
+                </tr>
+                acumulador+= item.Precio;
+            }
+            
+    </table>
+    <div class="card m-4" style="min-width: 18rem; max-width:30.5%">
+        <a asp-action="suma" asp-route-id="@Math.Round(acumulador)" class="btn btn-primary m-2">Suma</a>
+    </div>
+    </body>
+</html>
+
