@@ -438,3 +438,8 @@ CREATE VIEW Detalle_Alumno AS
 Select TB_Alumno.Nombre ,TB_Ventas.Precio 
 FROM TB_Ventas 
 INNER JOIN TB_Alumno ON TB_Ventas.Id_Venta = TB_Alumno.Id_Alumno
+
+INNER JOIN TB_Alumno ON TB_Ventas.Id_Alumno = TB_Alumno.Id_Alumno
+/*BOTON
+ <a asp-action="suma" asp-route-id="@Math.Round(suma)" class="btn btn-primary m-2">Suma</a> <b></b>
+    <a asp-action="promedio" asp-route-id="@Math.Round(promedio)" class="btn btn-primary m-2">Promedio</a>
