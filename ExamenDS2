@@ -433,4 +433,8 @@ namespace WebAppSem04_C1M.Controllers
     </div>
     </body>
 </html>
-
+DB
+CREATE VIEW Detalle_Alumno AS
+Select TB_Alumno.Nombre ,TB_Ventas.Precio 
+FROM TB_Ventas 
+INNER JOIN TB_Alumno ON TB_Ventas.Id_Venta = TB_Alumno.Id_Alumno
