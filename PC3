@@ -1,0 +1,123 @@
+[17:02, 5/6/2023] Leandou: BuscarUnDato en sql
+[17:02, 5/6/2023] Leandou: public IEnumerable<ClienteDistrito> BuscarCliente(string buscar)
+        {
+            var obj = from tbcli in conexion.ClienteDistritos select tbcli;
+            if(!String.IsNullOrEmpty(buscar) ) 
+            {
+                obj = from tbcli in conexion.ClienteDistritos where tbcli.NombreCliente.Contains(buscar) select tbcli;
+            }
+            return obj.ToList();
+        }
+[17:03, 5/6/2023] Leandou: el buscar en el HTML
+[17:03, 5/6/2023] Leandou: <form asp-action="BucarClienteDistrito" asp-controller="Factura">
+            <input type="text" name="buscar" placeholder="Buscar"/>
+            <<input type="submit" value="Buscar" class="btn btn-danger"/>
+
+        </form>
+[17:04, 5/6/2023] Leandou: Buscar entre 2 fechas un factura
+[17:04, 5/6/2023] Leandou: public IEnumerable<TbFactura> GetFecha(DateTime FechaInicio, DateTime FechaFin)
+        {
+            var obj = conexion.TbFacturas.Where(f => f.FecFac >= FechaInicio && f.FecFac <= FechaFin).ToList();
+            return obj;
+        }
+[17:04, 5/6/2023] Leandou: Su HTML
+[17:04, 5/6/2023] Leandou: <form asp-action="BuscarFecha" asp-controller="Factura" method="get">
+        <h1>BUSCAR FACTURAS POR FECHAS</h1><br />
+        <h3>Fecha 1:</h3>
+        <input type="date"  name=FechaInicio id="FechaInicio" placeholder="Fecha1"/><br />
+        <h3>Fecha 2:</h3>
+        <input type="date" name="FechaFinal" id="FechaFinal" placeholder="Fecha2"/><br />
+        <button type="submit" >Procesar</button>
+        
+        </form>
+[17:10, 5/6/2023] Leandou: Buscar Cliente su venta mediante un combo box
+[17:10, 5/6/2023] Leandou: public IEnumerable<ClienteFactura> GetClienteVentas(string id)
+        {
+            var obj = conexion.ClienteFacturas.Where(cl => cl.CodeCliente.Equals(id)).ToList();
+
+            return obj;
+        }
+[17:11, 5/6/2023] Leandou: En el controller
+[17:11, 5/6/2023] Leandou: public IActionResult ClienteVenta(string id)
+        {
+            ViewBag.ClienteFactura = _ClienteFactura.GetAll();
+            var obj = _ClienteFactura.GetClienteVentas(id);
+            return View(obj);
+        }
+[17:12, 5/6/2023] Leandou: HTML
+[17:12, 5/6/2023] Leandou: <form asp-action="ClienteVenta" asp-controller="Factura" method="get">
+        <select class="form-select" name="id">
+            
+            @foreach (var item in clienteF)
+            {
+                <option value="@item.CodeCliente" style="margin-bottom: 5px;">@item.NombreCliente</option>
+            }
+        </select>
+            <button class="btn btn-danger" type="submit">Procesar</button>
+        </form>
+[17:12, 5/6/2023] Leandou: @{
+    IEnumerable<ClienteFactura> clienteF = ViewBag.ClienteFactura;}
+    
+    
+ USE VENTAS
+GO
+
+
+
+/LISTAR LOS 4 PRIMEROS CLIENTES/
+SELECT TOP 4* 
+FROM TB_CLIENTE
+GO
+
+/LISTAR LOS 5 ULTIMOs/
+SELECT TOP 5* 
+FROM TB_CLIENTE order by RAZ_SOC_CLI desc
+GO
+
+/Listar 2 campos de manera ascendente/
+SELECT * 
+FROM TB_CLIENTE 
+ORDER BY RAZ_SOC_CLI ASC, CONTACTO ASC
+GO
+
+/Listar entre 2 fechas y el not lo contrario/
+SELECT c.COD_CLI, c.CONTACTO, c.FEC_REG
+FROM TB_CLIENTE AS C
+where C.FEC_REG  not between '2013-01-01' and '2013-06-01'
+go
+
+/Listar la cliente con su factura/
+SELECT C.COD_CLI,C.CONTACTO, F.FEC_FAC,F.EST_FAC, D.NOM_DIS
+FROM TB_CLIENTE AS C
+INNER JOIN TB_FACTURA AS F
+ON C.COD_CLI = F.COD_CLI
+INNER JOIN TB_DISTRITO AS D
+ON C.COD_DIS = D.COD_DIS
+GO
+
+/Listar la primera letra de razon social y el not lo contrario/
+SELECT C.COD_CLI,C.CONTACTO,C.RAZ_SOC_CLI
+FROM TB_CLIENTE AS C
+WHERE C.RAZ_SOC_CLI LIKE 'm%'
+go
+
+/LISTA LAS PALABRAS QUE EMPIENZEN CON C Y M/
+SELECT * 
+FROM TB_CLIENTE WHERE RAZ_SOC_CLI LIKE 'cm%'
+go
+
+/LISTAR DISTRITO NO VIVEN CLIENTES/
+SELECT D.NOM_DIS,C.COD_CLI,c.CONTACTO,c.COD_DIS, c.RAZ_SOC_CLI
+FROM TB_CLIENTE  AS C
+RIGHT OUTER JOIN TB_DISTRITO AS D
+ON C.COD_DIS = D.COD_DIS
+WHERE C.CONTACTO IS NULL
+GO
+[20:41, 6/6/2023] Leandou: UPDATE TB_CLIENTE SET CONTACTO = 'LEANDRO', TLF_CLI = '927723967'
+WHERE COD_CLI = 'C001'
+GO
+
+DELETE TB_CLIENTE WHERE COD_CLI = 'C002'
+GO
+
+ Scaffold-DBContext "Data Source=LAPTOP-TEJDRN6S\LEANDRODB;Initial Catalog=VENTAS;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False" Microsoft.EntityFrameworkCore.SqlServer -OutPutDir Models -Context VentasC -Force
